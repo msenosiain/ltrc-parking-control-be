@@ -1,0 +1,11 @@
+version: '3.9'
+name: parking-control
+services:
+
+    mongodb:
+        image: mongo:6.0.13
+        container_name: mongodb-parking-control
+        ports:
+            - '27017:27017'
+        volumes:
+            - ./mongodb/mongo-data:/data/db
