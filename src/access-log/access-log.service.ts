@@ -7,7 +7,8 @@ import { ConfigService } from '@nestjs/config';
 
 export interface RegisterAccessResponse {
   accessGranted: boolean;
-  message: string;
+  title: string;
+  subtitle: string;
 }
 
 @Injectable()
@@ -34,7 +35,8 @@ export class AccessLogService {
       if (isBefore(now, accessThreshold)) {
         return {
           accessGranted: false,
-          message: `Acceso denegado: Debes esperar ${threshold} minutos antes de volver a ingresar.`,
+          title: 'Acceso Denegado',
+          subtitle: `Debes esperar ${threshold} minutos antes de volver a ingresar`,
         };
       }
     }
@@ -45,7 +47,8 @@ export class AccessLogService {
 
     return {
       accessGranted: true,
-      message: 'Acceso registrado con éxito',
+      title: 'Acceso registrado con éxito',
+      subtitle: '',
     };
   }
 }
