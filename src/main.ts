@@ -12,6 +12,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:4200',
+      'https://ltrc-parking-control-ui.onrender.com',
       'https://estacionamiento.lostordos.com.ar',
     ],
   });
