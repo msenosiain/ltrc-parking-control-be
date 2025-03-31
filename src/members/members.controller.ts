@@ -46,10 +46,7 @@ export class MembersController {
     return this.membersService.createMembers(parsedMembers).pipe(
       catchError((err) => {
         Logger.error('Error while inserting members', err);
-        throw new HttpException(
-          err,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
       }),
     );
   }
