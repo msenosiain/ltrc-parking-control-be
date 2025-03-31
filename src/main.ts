@@ -8,6 +8,14 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
+  Logger.log('Enabling CORS');
+  app.enableCors({
+    origin: [
+      'http://localhost:4200',
+      'https://estacionamiento.lostordos.com.ar',
+    ],
+  });
+
   Logger.log('Adding global prefix');
   app.setGlobalPrefix(globalPrefix);
 
