@@ -14,12 +14,17 @@ import { MembersService } from './members.service';
 import { Member } from './schemas/member.schema';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ExcelService } from '../common/services/excel.service';
+import {
+  AccessLogService,
+  RegisterAccessResponse,
+} from '../access-log/access-log.service';
 
 @Controller('members')
 export class MembersController {
   constructor(
     private readonly membersService: MembersService,
     private readonly excelService: ExcelService,
+    private readonly accessLogService: AccessLogService,
   ) {}
 
   @Get()
@@ -28,12 +33,24 @@ export class MembersController {
   }
 
   @Get(':dni')
-  async searchByDni(@Param('dni') dni: string): Promise<Member> {
-    const member: Member = await this.membersService.searchByDni(dni);
-    if (!member) {
-      throw new NotFoundException(`Socio no encontrado con el DNI: ${dni}`);
+  async searchByDni(
+    @Param('dni') dni: string,
+  ): Promise<RegisterAccessResponse> {
+    try {
+      const member: Member = await this.membersService.searchByDni(dni);
+      if (!member) {
+        throw new NotFoundException(`Socio no encontrado con el DNI: ${dni}`);
+      }
+
+      return await this.accessLogService.registerAccess(member);
+    } catch (err) {
+      if (err.status === 404) {
+        throw err;
+      } else {
+        Logger.error('Error while registering member access', err);
+        throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }
-    return member;
   }
 
   @Post('upload')

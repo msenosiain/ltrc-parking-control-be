@@ -4,9 +4,11 @@ import { AccessLogEntry } from './schemas/access-log-entry.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
+import { Member } from '../members/schemas/member.schema';
 
 export interface RegisterAccessResponse {
   accessGranted: boolean;
+  member: Member;
   title: string;
   subtitle: string;
 }
@@ -19,9 +21,9 @@ export class AccessLogService {
     private configService: ConfigService,
   ) {}
 
-  async registerAccess(dni: string): Promise<RegisterAccessResponse> {
+  async registerAccess(member: Member): Promise<RegisterAccessResponse> {
     const lastAccess = await this.accessLogEntryModel
-      .findOne({ dni })
+      .findOne({ dni: member.dni })
       .sort({ createdAt: -1 });
 
     if (lastAccess) {
@@ -31,24 +33,25 @@ export class AccessLogService {
         30,
       );
       const accessThreshold = addMinutes(lastAccess.createdAt, threshold);
-
       if (isBefore(now, accessThreshold)) {
         return {
           accessGranted: false,
-          title: 'Acceso Denegado',
-          subtitle: `Debes esperar ${threshold} minutos antes de volver a ingresar`,
+          member,
+          title: `Acceso Denegado para ${member.dni}`,
+          subtitle: `${member.name} ${member.lastName}, debes esperar ${threshold} minutos antes de volver a ingresar`,
         };
       }
     }
 
     // Registrar un nuevo acceso
-    const newAccess = new this.accessLogEntryModel({ dni });
+    const newAccess = new this.accessLogEntryModel({ dni: member.dni });
     await newAccess.save();
 
     return {
       accessGranted: true,
-      title: 'Acceso registrado con éxito',
-      subtitle: '',
+      member,
+      title: `Hola ${member.name} ${member.lastName}!`,
+      subtitle: 'Acceso registrado con éxito',
     };
   }
 }

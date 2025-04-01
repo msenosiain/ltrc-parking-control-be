@@ -4,11 +4,13 @@ import { MembersController } from './members.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Member, MemberSchema } from './schemas/member.schema';
 import { CommonModule } from '../common/common.module';
+import { AccessLogModule } from '../access-log/access-log.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Member.name, schema: MemberSchema }]),
     CommonModule,
+    MongooseModule.forFeature([{ name: Member.name, schema: MemberSchema }]),
+    AccessLogModule,
   ],
   providers: [MembersService],
   controllers: [MembersController],
