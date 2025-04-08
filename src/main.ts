@@ -4,23 +4,24 @@ import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
-  const globalPrefix = '/api/v1';
-
   const app = await NestFactory.create(AppModule);
 
+  const configService = app.get(ConfigService);
+
   Logger.log('Enabling CORS');
-  app.enableCors({
-    origin: [
-      'http://localhost:4200',
-      'https://ltrc-parking-control-ui.onrender.com',
-      'https://estacionamiento.lostordos.com.ar',
-    ],
-  });
+  const corsAllowedOrigins = configService.get('API_CORS_ALLOWED_ORIGINS', '');
+  const corsAllowedOriginsArray = corsAllowedOrigins
+    .split(',')
+    .map((item) => item.trim());
+  app.enableCors({ origin: corsAllowedOriginsArray, credentials: true });
 
   Logger.log('Adding global prefix');
+  const globalPrefix = configService.get<string>(
+    'API_GLOBAL_PREFIX',
+    '/api/v1',
+  );
   app.setGlobalPrefix(globalPrefix);
 
-  const configService = app.get(ConfigService);
   const port = configService.get<number>('API_PORT') || 3000;
   await app.listen(port);
 

@@ -26,6 +26,10 @@ export class MembersController {
     private readonly excelService: ExcelService,
     private readonly accessLogService: AccessLogService,
   ) {}
+  // @Post()
+  // async create(): Promise<Member> {
+  //   return await this.membersService.createMember();
+  // }
 
   @Get()
   async findAll(): Promise<Member[]> {
@@ -73,4 +77,8 @@ export class MembersController {
       throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+
+
+
 }
