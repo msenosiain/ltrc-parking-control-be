@@ -7,6 +7,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -18,6 +19,7 @@ import {
   AccessLogService,
   RegisterAccessResponse,
 } from '../access-log/access-log.service';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Controller('members')
 export class MembersController {
@@ -26,14 +28,15 @@ export class MembersController {
     private readonly excelService: ExcelService,
     private readonly accessLogService: AccessLogService,
   ) {}
+
   // @Post()
   // async create(): Promise<Member> {
   //   return await this.membersService.createMember();
   // }
 
   @Get()
-  async findAll(): Promise<Member[]> {
-    return await this.membersService.findAll();
+  async getMembers(@Query() paginationDto: PaginationDto) {
+    return this.membersService.getPaginated(paginationDto);
   }
 
   @Get(':dni')
@@ -77,8 +80,4 @@ export class MembersController {
       throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
-
-
-
 }
