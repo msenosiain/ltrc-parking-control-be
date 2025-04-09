@@ -13,9 +13,17 @@ export class MembersService {
   }
 
   async getPaginated(paginationDto: PaginationDto) {
-    const { page, limit, sortBy, sortOrder } = paginationDto;
+    const { query, page, limit, sortBy, sortOrder } = paginationDto;
 
-    // Valor predeterminado si no se proporcionan valores para sortBy y sortOrder
+    const searchQuery = query
+      ? {
+          $or: [
+            { lastName: new RegExp(query.toUpperCase(), 'i') },
+            { dni: new RegExp(query, 'i') },
+          ],
+        }
+      : {};
+
     const sortField = sortBy || 'lastName';
     const order = sortOrder === 'desc' ? -1 : 1;
 
@@ -23,7 +31,7 @@ export class MembersService {
 
     const [members, total] = await Promise.all([
       this.memberModel
-        .find()
+        .find(searchQuery)
         .skip(skip)
         .limit(limit)
         .sort({ [sortField]: order })
