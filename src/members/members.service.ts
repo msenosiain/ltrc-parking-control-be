@@ -18,7 +18,7 @@ export class MembersService {
     const searchQuery = query
       ? {
           $or: [
-            { lastName: new RegExp(query.toUpperCase(), 'i') },
+            { lastName: { $regex: `^${query}`, $options: 'i' } },
             { dni: new RegExp(query, 'i') },
           ],
         }
