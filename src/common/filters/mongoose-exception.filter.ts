@@ -1,6 +1,5 @@
 import {
   ArgumentsHost,
-  BadRequestException,
   Catch,
   ExceptionFilter,
   HttpStatus,
@@ -20,7 +19,7 @@ export class MongooseExceptionFilter implements ExceptionFilter {
         statusCode: HttpStatus.BAD_REQUEST,
       });
     }
-    
+
     return response.status(exception.getStatus()).json(exception.getResponse());
   }
 }
