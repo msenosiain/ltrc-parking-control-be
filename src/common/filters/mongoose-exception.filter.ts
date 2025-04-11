@@ -20,15 +20,7 @@ export class MongooseExceptionFilter implements ExceptionFilter {
         statusCode: HttpStatus.BAD_REQUEST,
       });
     }
-
-    if (exception instanceof BadRequestException) {
-      const status = exception.getStatus();
-      return response.status(status).json(exception.getResponse());
-    }
-
-    return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Internal server error',
-    });
+    
+    return response.status(exception.getStatus()).json(exception.getResponse());
   }
 }
