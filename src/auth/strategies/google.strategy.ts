@@ -2,6 +2,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { ConfigService } from '@nestjs/config';
+import { AuthService } from '../auth.service';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
@@ -10,7 +11,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     '',
   );
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {
     super({
       clientID: configService.get<string>('GOOGLE_AUTH_CLIENT_ID'),
       clientSecret: configService.get<string>('GOOGLE_AUTH_CLIENT_SECRET'),
@@ -36,13 +40,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       return done(new Error('Unauthorized domain'), false);
     }
 
-    const user = {
-      email,
-      name: profile.name.givenName,
-      lastName: profile.name.familyName,
-      googleId: profile.id,
-    };
-
-    done(null, user);
+    return this.authService.validateGoogleUser(profile);
   }
 }

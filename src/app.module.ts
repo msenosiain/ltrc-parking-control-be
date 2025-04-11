@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AccessLogModule } from './access-log/access-log.module';
 import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 import * as Joi from 'joi';
 
 export const configSchema = Joi.object({
@@ -41,6 +42,7 @@ export const configSchema = Joi.object({
     MembersModule,
     AccessLogModule,
     AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
