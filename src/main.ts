@@ -25,13 +25,6 @@ async function bootstrap() {
 
   app.useGlobalFilters(new MongooseExceptionFilter());
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true, // Convierte a tipo del DTO
-      whitelist: true, // Elimina propiedades no incluidas en el DTO
-    }),
-  );
-
   const port = configService.get<number>('API_PORT') || 3000;
   await app.listen(port);
 
