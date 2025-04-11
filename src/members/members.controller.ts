@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   HttpException,
@@ -9,6 +10,7 @@ import {
   Post,
   Query,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { MembersService } from './members.service';
@@ -20,6 +22,11 @@ import {
   RegisterAccessResponse,
 } from '../access-log/access-log.service';
 import { PaginationDto } from '../common/dto/pagination.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '../auth/roles.enum';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { CreateMemberDto } from './dto/create-member.dto';
 
 @Controller('members')
 export class MembersController {
@@ -29,12 +36,16 @@ export class MembersController {
     private readonly accessLogService: AccessLogService,
   ) {}
 
-  // @Post()
-  // async create(): Promise<Member> {
-  //   return await this.membersService.createMember();
-  // }
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN)
+  async create(@Body() payload: CreateMemberDto): Promise<Member> {
+    return await this.membersService.create(payload);
+  }
 
   @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.USER)
   async getMembers(@Query() paginationDto: PaginationDto) {
     return this.membersService.getPaginated(paginationDto);
   }
@@ -61,6 +72,8 @@ export class MembersController {
   }
 
   @Post('upload')
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN)
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,

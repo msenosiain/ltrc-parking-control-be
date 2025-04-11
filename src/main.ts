@@ -1,7 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { MongooseExceptionFilter } from './common/filters/mongoose-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,6 +22,15 @@ async function bootstrap() {
     '/api/v1',
   );
   app.setGlobalPrefix(globalPrefix);
+
+  app.useGlobalFilters(new MongooseExceptionFilter());
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true, // Convierte a tipo del DTO
+      whitelist: true, // Elimina propiedades no incluidas en el DTO
+    }),
+  );
 
   const port = configService.get<number>('API_PORT') || 3000;
   await app.listen(port);

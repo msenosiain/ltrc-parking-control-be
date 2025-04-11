@@ -2,6 +2,7 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { ROLES_KEY } from '../decorators/roles.decorator';
+import { Role } from '../roles.enum';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -10,18 +11,17 @@ export class RolesGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const requiredRoles = this.reflector.get<string[]>(
+    const requiredRoles = this.reflector.get<Role[]>(
       ROLES_KEY,
       context.getHandler(),
     );
     if (!requiredRoles) {
-      return true; // Si no hay roles requeridos, permite el acceso
+      return true;
     }
 
     const request = context.switchToHttp().getRequest();
-    const user = request.user; // Este es el usuario autenticado (agregado por el guardia JWT)
+    const user = request.user;
 
-    // Verificar si el usuario tiene al menos uno de los roles requeridos
-    return requiredRoles.some((role) => user.roles?.includes(role));
+    return requiredRoles.some((role: Role) => user.roles?.includes(role));
   }
 }

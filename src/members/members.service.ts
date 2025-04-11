@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Member } from './schemas/member.schema';
 import { Model } from 'mongoose';
 import { PaginationDto } from '../common/dto/pagination.dto';
+import { CreateMemberDto } from './dto/create-member.dto';
 
 @Injectable()
 export class MembersService {
@@ -52,6 +53,10 @@ export class MembersService {
       .findOne({ dni: new RegExp(dni, 'i') })
       .select('-_id')
       .exec();
+  }
+
+  async create(dto: CreateMemberDto): Promise<Member> {
+    return await this.memberModel.create(dto);
   }
 
   async createMembers(members: Member[]): Promise<Member[]> {

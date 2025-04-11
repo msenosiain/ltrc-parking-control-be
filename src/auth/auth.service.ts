@@ -22,11 +22,10 @@ export class AuthService {
         lastName: name.familyName,
       });
     }
-
     return user;
   }
 
-  async generateJwt(user: any) {
+  async generateJwt(user: User) {
     const payload = {
       sub: user.googleId,
       email: user.email,
