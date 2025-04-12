@@ -59,7 +59,7 @@ export class MembersController {
   //   return this.membersService.get(id);
   // }
 
-  @Get('/access/|:dni')
+  @Get('/access/:dni')
   async searchByDni(
     @Param('dni') dni: string,
   ): Promise<RegisterAccessResponse> {
