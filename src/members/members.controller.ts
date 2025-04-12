@@ -8,13 +8,13 @@ import {
   NotFoundException,
   Param,
   Post,
+  Put,
   Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { MembersService } from './members.service';
-import { Member } from './schemas/member.schema';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ExcelService } from '../common/services/excel.service';
 import {
@@ -27,6 +27,8 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '../auth/roles.enum';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { CreateMemberDto } from './dto/create-member.dto';
+import { UpdateMemberDto } from './dto/update-member.dto';
+import { Member } from './schemas/member.schema';
 
 @Controller('members')
 export class MembersController {
@@ -50,7 +52,14 @@ export class MembersController {
     return this.membersService.getPaginated(paginationDto);
   }
 
-  @Get(':dni')
+  // @Get(':id')
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(Role.USER)
+  // async getMember(@Param('id') id: string): Promise<Member> {
+  //   return this.membersService.get(id);
+  // }
+
+  @Get('/access/|:dni')
   async searchByDni(
     @Param('dni') dni: string,
   ): Promise<RegisterAccessResponse> {
@@ -72,7 +81,7 @@ export class MembersController {
   }
 
   @Post('upload')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
@@ -92,5 +101,15 @@ export class MembersController {
       Logger.error('Error while inserting members', err);
       throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  async update(
+    @Param('id') id: string,
+    @Body() updateMember: UpdateMemberDto,
+  ): Promise<Member> {
+    return this.membersService.update(id, updateMember);
   }
 }

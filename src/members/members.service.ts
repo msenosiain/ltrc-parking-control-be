@@ -1,9 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Member } from './schemas/member.schema';
 import { Model } from 'mongoose';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import { CreateMemberDto } from './dto/create-member.dto';
+import { UpdateMemberDto } from './dto/update-member.dto';
 
 @Injectable()
 export class MembersService {
@@ -11,6 +12,10 @@ export class MembersService {
 
   async findAll(): Promise<Member[]> {
     return await this.memberModel.find().select('-_id').exec();
+  }
+
+  async get(id: string): Promise<Member> {
+    return await this.memberModel.findById(id).exec();
   }
 
   async getPaginated(paginationDto: PaginationDto) {
@@ -57,6 +62,20 @@ export class MembersService {
 
   async create(dto: CreateMemberDto): Promise<Member> {
     return await this.memberModel.create(dto);
+  }
+
+  async update(id: string, updateMemberDto: UpdateMemberDto): Promise<Member> {
+    const member = await this.memberModel.findByIdAndUpdate(
+      id,
+      updateMemberDto,
+      {
+        new: true,
+      },
+    );
+    if (!member) {
+      throw new NotFoundException(`Member #${id} not found`);
+    }
+    return member;
   }
 
   async createMembers(members: Member[]): Promise<Member[]> {
