@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
@@ -111,5 +112,12 @@ export class MembersController {
     @Body() updateMember: UpdateMemberDto,
   ): Promise<Member> {
     return this.membersService.update(id, updateMember);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  async delete(@Param('id') id: string): Promise<Member> {
+    return this.membersService.delete(id);
   }
 }

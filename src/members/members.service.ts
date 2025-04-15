@@ -81,4 +81,8 @@ export class MembersService {
   async createMembers(members: Member[]): Promise<Member[]> {
     return await this.memberModel.insertMany(members);
   }
+
+  async delete(id: string): Promise<any> {
+    return this.memberModel.findByIdAndDelete(id);
+  }
 }
