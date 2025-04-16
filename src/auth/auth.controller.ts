@@ -1,8 +1,9 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
+import { RefreshJwtAuthGuard } from './guards/refresh-jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -13,7 +14,7 @@ export class AuthController {
 
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() req) {}
+  async googleAuth() {}
 
   @Get('google/redirect')
   @UseGuards(AuthGuard('google'))
@@ -23,8 +24,14 @@ export class AuthController {
       'GOOGLE_AUTH_CALLBACK_URL',
       'http://localhost:4200/auth/callback',
     );
+    res.redirect(
+      `${callbackUrl}?access_token=${token.access_token}&refresh_token=${token.refresh_token}`,
+    );
+  }
 
-    // Redirect back to Angular app with token in URL
-    res.redirect(`${callbackUrl}?token=${token.access_token}`);
+  @UseGuards(RefreshJwtAuthGuard)
+  @Post('refresh')
+  async refreshTokens(@Req() req) {
+    return this.authService.refreshToken(req.user);
   }
 }

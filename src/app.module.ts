@@ -21,6 +21,7 @@ export const configSchema = Joi.object({
   GOOGLE_AUTH_ALLOWED_DOMAIN: Joi.string().required(),
   GOOGLE_AUTH_CALLBACK_URL: Joi.string().required(),
   GOOGLE_AUTH_JWT_SECRET: Joi.string().required(),
+  GOOGLE_AUTH_REFRESH_JWT_SECRET: Joi.string().required(),
 });
 
 @Module({

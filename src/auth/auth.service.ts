@@ -1,41 +1,45 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/schemas/user.schema';
-import { UsersService } from '../users/users.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
-    private usersService: UsersService,
+    private configService: ConfigService,
   ) {}
 
-  async validateGoogleUser(profile: any): Promise<User> {
-    const { id, name, emails } = profile;
-    let user = await this.usersService.findOneByEmail(emails[0].value);
+  async generateJwt(user: User) {
+    const payload = this.buildJWTPayload(user);
 
-    if (!user) {
-      user = await this.usersService.create({
-        email: emails[0].value,
-        googleId: id,
-        name: name.givenName,
-        lastName: name.familyName,
-      });
-    }
-    return user;
+    return {
+      access_token: this.jwtService.sign(payload),
+      refresh_token: this.jwtService.sign(payload, {
+        expiresIn: '1d',
+        secret: this.configService.get<string>(
+          'GOOGLE_AUTH_REFRESH_JWT_SECRET',
+          'super-secret-key',
+        ),
+      }),
+    };
   }
 
-  async generateJwt(user: User) {
-    const payload = {
+  refreshToken(user: User) {
+    const payload = this.buildJWTPayload(user);
+
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
+  }
+
+  private buildJWTPayload(user: User) {
+    return {
       sub: user.googleId,
       email: user.email,
       name: user.name,
       lastName: user.lastName,
       roles: user.roles,
-    };
-
-    return {
-      access_token: this.jwtService.sign(payload),
     };
   }
 }

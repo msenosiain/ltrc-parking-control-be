@@ -12,7 +12,10 @@ export class MongooseExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    if (exception.name === 'MongoServerError') {
+    if (
+      exception.name === 'MongoServerError' ||
+      exception.name === 'ValidationError'
+    ) {
       return response.status(HttpStatus.BAD_REQUEST).json({
         message: exception.message,
         error: exception.name,
@@ -20,6 +23,10 @@ export class MongooseExceptionFilter implements ExceptionFilter {
       });
     }
 
-    return response.status(exception.getStatus()).json(exception.getResponse());
+    return response.status(exception.status).json({
+      message: exception.message,
+      error: exception.name,
+      statusCode: exception.response.statusCode,
+    });
   }
 }
