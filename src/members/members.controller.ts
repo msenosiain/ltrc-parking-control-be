@@ -40,7 +40,7 @@ export class MembersController {
   ) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   async create(@Body() payload: CreateMemberDto): Promise<Member> {
     return await this.membersService.create(payload);
