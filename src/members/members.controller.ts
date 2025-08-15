@@ -18,10 +18,6 @@ import {
 import { MembersService } from './members.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ExcelService } from '../common/services/excel.service';
-import {
-  AccessLogService,
-  RegisterAccessResponse,
-} from '../access-log/access-log.service';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -36,7 +32,6 @@ export class MembersController {
   constructor(
     private readonly membersService: MembersService,
     private readonly excelService: ExcelService,
-    private readonly accessLogService: AccessLogService,
   ) {}
 
   @Post()
@@ -60,17 +55,14 @@ export class MembersController {
   //   return this.membersService.get(id);
   // }
 
-  @Get('/access/:dni')
-  async searchByDni(
-    @Param('dni') dni: string,
-  ): Promise<RegisterAccessResponse> {
+  @Get(':dni')
+  async searchByDni(@Param('dni') dni: string): Promise<Member> {
     try {
-      const member: Member = await this.membersService.searchByDni(dni);
+      const member = await this.membersService.searchByDni(dni);
       if (!member) {
         throw new NotFoundException(`Socio no encontrado con el DNI: ${dni}`);
       }
-
-      return await this.accessLogService.registerAccess(member);
+      return member;
     } catch (err) {
       if (err.status === 404) {
         throw err;

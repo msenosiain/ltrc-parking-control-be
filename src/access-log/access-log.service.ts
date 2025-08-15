@@ -4,6 +4,7 @@ import { AccessLogEntry } from './schemas/access-log-entry.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
+import { MembersService } from '../members/members.service';
 import { Member } from '../members/schemas/member.schema';
 
 export interface RegisterAccessResponse {
@@ -18,12 +19,14 @@ export class AccessLogService {
   constructor(
     @InjectModel(AccessLogEntry.name)
     private accessLogEntryModel: Model<AccessLogEntry>,
+    private membersService: MembersService,
     private configService: ConfigService,
   ) {}
 
-  async registerAccess(member: Member): Promise<RegisterAccessResponse> {
+  async registerAccess(dni: string): Promise<RegisterAccessResponse> {
+    const member = await this.membersService.searchByDni(dni);
     const lastAccess = await this.accessLogEntryModel
-      .findOne({ dni: member.dni })
+      .findOne({ dni })
       .sort({ createdAt: -1 });
 
     if (lastAccess) {
@@ -44,7 +47,7 @@ export class AccessLogService {
     }
 
     // Registrar un nuevo acceso
-    const newAccess = new this.accessLogEntryModel({ dni: member.dni });
+    const newAccess = new this.accessLogEntryModel({ dni });
     await newAccess.save();
 
     return {

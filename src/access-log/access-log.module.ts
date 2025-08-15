@@ -6,6 +6,8 @@ import {
   AccessLogSchema,
 } from './schemas/access-log-entry.schema';
 import { AccessLogService } from './access-log.service';
+import { AccessLogController } from './access-log.controller';
+import { MembersModule } from '../members/members.module';
 
 @Module({
   imports: [
@@ -17,8 +19,10 @@ import { AccessLogService } from './access-log.service';
       },
     ]),
     CommonModule,
+    MembersModule,
   ],
   exports: [AccessLogService],
   providers: [AccessLogService],
+  controllers: [AccessLogController],
 })
 export class AccessLogModule {}
