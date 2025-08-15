@@ -11,12 +11,7 @@ export class CreateMemberDto {
   @IsNotEmpty()
   @IsString()
   @Transform(({ value }) => value.toUpperCase())
-  name: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @Transform(({ value }) => value.toUpperCase())
-  lastName: string;
+  fullName: string;
 
   @IsNotEmpty()
   @IsNumberString(

@@ -48,7 +48,7 @@ export class MembersController {
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.USER)
+  @Roles(Role.USER, Role.ADMIN)
   async getMembers(@Query() paginationDto: PaginationDto) {
     return this.membersService.getPaginated(paginationDto);
   }
@@ -92,8 +92,7 @@ export class MembersController {
       const jsonData = this.excelService.readExcelBuffer(file.buffer);
       const parsedMembers = jsonData.map((parsed: any) => {
         return {
-          name: parsed.nombre,
-          lastName: parsed?.apellido,
+          fullName: parsed.nombre,
           dni: parsed.dni,
         } as Member;
       });

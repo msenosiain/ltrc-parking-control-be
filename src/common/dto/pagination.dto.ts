@@ -21,8 +21,8 @@ export class PaginationDto {
 
   @IsOptional()
   @IsString()
-  @IsIn(['name', 'lastName', 'dni'], {
-    message: 'sortBy must be one of: name, lastName, dni',
+  @IsIn(['fullName', 'dni'], {
+    message: 'sortBy must be one of: fullName, dni',
   })
   sortBy?: string;
 

@@ -38,7 +38,7 @@ export class AccessLogService {
           accessGranted: false,
           member,
           title: `Acceso Denegado para ${member.dni}`,
-          subtitle: `${member.name} ${member.lastName}, debes esperar ${threshold} minutos antes de volver a ingresar`,
+          subtitle: `${member.fullName}, debes esperar ${threshold} minutos antes de volver a ingresar`,
         };
       }
     }
@@ -50,7 +50,7 @@ export class AccessLogService {
     return {
       accessGranted: true,
       member,
-      title: `Hola ${member.name} ${member.lastName}!`,
+      title: `Hola ${member.fullName}!`,
       subtitle: 'Acceso registrado con éxito',
     };
   }

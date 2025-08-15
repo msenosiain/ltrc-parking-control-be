@@ -24,13 +24,13 @@ export class MembersService {
     const searchQuery = query
       ? {
           $or: [
-            { lastName: { $regex: `^${query}`, $options: 'i' } },
+            { fullName: { $regex: `^${query}`, $options: 'i' } },
             { dni: new RegExp(query, 'i') },
           ],
         }
       : {};
 
-    const sortField = sortBy || 'lastName';
+    const sortField = sortBy || 'fullName';
     const order = sortOrder === 'desc' ? -1 : 1;
 
     const skip = (page - 1) * limit;

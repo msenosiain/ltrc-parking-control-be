@@ -4,10 +4,7 @@ import { Document } from 'mongoose';
 @Schema()
 export class Member extends Document {
   @Prop({ required: true })
-  name: string;
-
-  @Prop({ required: true })
-  lastName: string;
+  fullName: string;
 
   @Prop({ required: true, unique: true })
   dni: string;
