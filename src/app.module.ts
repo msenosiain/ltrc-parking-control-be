@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AccessLogModule } from './access-log/access-log.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { ParkingModule } from './parking/parking.module';
 import * as Joi from 'joi';
 
 export const configSchema = Joi.object({
@@ -22,6 +23,7 @@ export const configSchema = Joi.object({
   GOOGLE_AUTH_CALLBACK_URL: Joi.string().required(),
   GOOGLE_AUTH_JWT_SECRET: Joi.string().required(),
   GOOGLE_AUTH_REFRESH_JWT_SECRET: Joi.string().required(),
+  PARKING_SPACES: Joi.number().required(),
 });
 
 @Module({
@@ -44,6 +46,7 @@ export const configSchema = Joi.object({
     AccessLogModule,
     AuthModule,
     UsersModule,
+    ParkingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
