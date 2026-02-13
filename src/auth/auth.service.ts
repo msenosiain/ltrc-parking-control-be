@@ -12,15 +12,16 @@ export class AuthService {
 
   async generateJwt(user: User) {
     const payload = this.buildJWTPayload(user);
+    const refreshSecret = this.configService.get<string>(
+      'GOOGLE_AUTH_REFRESH_JWT_SECRET',
+      'super-secret-key',
+    );
 
     return {
       access_token: this.jwtService.sign(payload),
       refresh_token: this.jwtService.sign(payload, {
+        secret: refreshSecret,
         expiresIn: '1d',
-        secret: this.configService.get<string>(
-          'GOOGLE_AUTH_REFRESH_JWT_SECRET',
-          'super-secret-key',
-        ),
       }),
     };
   }
